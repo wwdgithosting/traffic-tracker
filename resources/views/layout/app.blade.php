@@ -3785,20 +3785,35 @@ License: For each use you must have a valid license purchased only from above li
    <script src="{{asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>
    <script src="{{asset('assets/plugins/custom/vis-timeline/vis-timeline.bundle.js')}}"></script>
 
+   @if(Route::current()->getName() === 'menu')
    <script src="{{asset('assets/js/custom/apps/user-management/permissions/list.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/user-management/permissions/add-permission.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/user-management/permissions/update-permission.js')}}"></script>
-
+   @endif
+   @if(Route::current()->getName() === 'role')
    <script src="{{asset('assets/js/custom/apps/user-management/roles/list/add.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/user-management/roles/list/update-role.js')}}"></script>
-
+   @endif
+   @if(Route::current()->getName() === 'organization')
    <script src="{{asset('assets/js/custom/apps/customers/list/export.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/customers/list/list.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/customers/add.js')}}"></script>
-
+   @endif
+   @if(Route::current()->getName() === 'user')
    <script src="{{asset('assets/js/custom/apps/user-management/users/list/table.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/user-management/users/list/export-users.js')}}"></script>
    <script src="{{asset('assets/js/custom/apps/user-management/users/list/add.js')}}"></script>
+   @endif
+   @if(Route::current()->getName() === 'feed')
+   <script src="{{asset('assets/js/custom/apps/feed/list/export.js')}}"></script>
+   <script src="{{asset('assets/js/custom/apps/feed/list/list.js')}}"></script>
+   <script src="{{asset('assets/js/custom/apps/feed/add.js')}}"></script>
+   @endif
+   @if(Route::current()->getName() === 'partner')
+   <script src="{{asset('assets/js/custom/apps/partners/list/export.js')}}"></script>
+   <script src="{{asset('assets/js/custom/apps/partners/list/list.js')}}"></script>
+   <script src="{{asset('assets/js/custom/apps/partners/add.js')}}"></script>
+   @endif
 
    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>

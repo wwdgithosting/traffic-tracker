@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\PartnerController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -74,6 +75,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('feed-edit/{id}', 'edit')->name('-edit');
         Route::get('feed-delete/{id}', 'destroy')->name('-delete');
         Route::post('feed-update', 'update')->name('-update');
+        // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
+        // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
+    });
+
+    Route::controller(PartnerController::class)->as('partner')->group(function () {
+        Route::get('partner', 'index');
+        Route::post('partner-store', 'store')->name('-store');
+        Route::get('partner-edit/{id}', 'edit')->name('-edit');
+        Route::get('partner-delete/{id}', 'destroy')->name('-delete');
+        Route::post('partner-update', 'update')->name('-update');
         // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
     });

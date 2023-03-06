@@ -11,13 +11,17 @@ class Feed extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'feed_name',
-        'subid',
-        'ip',
+        'name',
         'limit',
-        'url',
+        'feed_url',
+        'sub_id',
+        'ip_limit',
+        'sid_limit',
+        'feed_url_waterfall',
         'randomise',
+        'latency_test',
         'fallback_feed_url',
+        'notes',
         'status',
         'country_code',
         'keyword',
@@ -28,6 +32,18 @@ class Feed extends Model
         'browser_user_agent',
         'browser_language',
         'referrer',
+        'ip',
+        'created_user_id'
 
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'name', 'id');
+    }
+
+    public function patners()
+    {
+        return $this->belongsTo(Partner::class, 'name', 'id');
+    }
 }

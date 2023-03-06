@@ -16,24 +16,17 @@ var KTModalCustomersAdd = function () {
 			form,
 			{
 				fields: {
-                    'feedname': {
+                    'name': {
 						validators: {
 							notEmpty: {
-								message: 'Partner name is required'
+								message: 'name is required'
 							}
 						}
 					},
-                    'limit': {
+                    'organizations': {
 						validators: {
 							notEmpty: {
-								message: 'URL limit is required'
-							}
-						}
-					},
-                    'fallback_feed_url': {
-						validators: {
-							notEmpty: {
-								message: 'Fallback_feed_url limit is required'
+								message: 'organizations is required'
 							}
 						}
 					}
@@ -50,10 +43,10 @@ var KTModalCustomersAdd = function () {
 		);
 
 		// Revalidate country field. For more info, plase visit the official plugin site: https://select2.org/
-       /* $(form.querySelector('[name="country"]')).on('change', function() {
+        $(form.querySelector('[name="country"]')).on('change', function() {
             // Revalidate the field when an option is chosen
             validator.revalidateField('country');
-        });*/
+        });
 
 		// Action buttons
 		submitButton.addEventListener('click', function (e) {
@@ -63,80 +56,25 @@ var KTModalCustomersAdd = function () {
 			if (validator) {
 				validator.validate().then(function (status) {
 					console.log('validated!');
-                    console.log(navigator.languages[1],);
-                    console.log(navigator);
+
 					if (status == 'Valid') {
 						submitButton.setAttribute('data-kt-indicator', 'on');
-                        var feed_urls=[];
-                        
-                        
-                        // var feed_url=form.querySelectorAll('.feed_url');
-                        // var feed_url_limit=form.querySelectorAll('.feed_url_limit');
-                        // var feed_sub_ids=form.querySelectorAll('.sub_id');
-                        var indexes=form.querySelector('[name="count_index"]').value.split(',');
-                        console.log(indexes);
-                        if($('#kt_modal_sub_id_limit').is(':checked')){
-                            console.log('on');
-                        }else{
-                            console.log('off');
-                        }
 
-                        for(let i=0;i<indexes.length;i++){        
-                            var sub_id=[];                   
-                            $('.sub_id_'+indexes[i]).each(function(k){
-                               
-                                let subObj=[];
-                                console.log($(this).val());
-                                
-                                
-                                    $('.sub_id_limit_'+indexes[i]).each(function(j){
-                                        console.log($(this).val());
-                                       
-                                            subObj.push({'feed_url_index':i,'limit':$(this).val()})
-                                       
-                                       
-                                    })
-    
-                               
-                                sub_id.push({'sub_id':$(this).val(),subObj});
-                            })
-                           
-                            feed_urls.push({'urls':$('.feed_url_'+indexes[i]).val(),'limit':$('.feed_url_limit_'+indexes[i]).val(),'sub_id':sub_id})
-
-
-                        }
-                        console.log('feed_urls',feed_urls);
-                        console.log('sub_id',sub_id);
-                        // for (let i = 0; i < feed_url.length; i++) {
-                        //     feed_urls.push({'urls':feed_url[i].value,'limit':feed_url_limit[i].value,'sub_id':feed_sub_ids[i].value});
-                        //     //console.log(feed_urls);
-                        //   }
-                          console.log(feed_urls);
 						// Disable submit button whilst loading
-						//submitButton.disabled = true;
-                      
+						submitButton.disabled = true;
 
-						axios.post("feed-store", {
-                            name: form.querySelector('[name="feedname"]').value,
-							limit: form.querySelector('[name="limit"]').value,
-							notes: form.querySelector('[name="description"]').value,
-                            feeds: feed_urls,
-                            sub_id:sub_id,
-                            fallback_feed_url:form.querySelector('[name="fallback_feed_url"]').value,
-                            sid_limit:($('#kt_modal_sub_id_limit').is(':checked')) ? 1:0 ,
-                            randomise:($('#kt_modal_randonisation').is(':checked')) ? 1:0 ,
-                            latency_test:($('#kt_modal_latency_test').is(':checked')) ? 1:0 ,
-                            ip_limit:($('#kt_modal_ip_limit').is(':checked')) ? 1:0 ,
-                            feed_url_waterfall:($('#kt_modal_feed_url_waterfall').is(':checked')) ? 1:0 ,
-                            browser_language:navigator.languages[1],
-                            os:navigator.userAgentData.platform,
-                            device:(!navigator.userAgentData.mobile)? 'Desktop':'Mobile',
-                            browser:navigator.userAgentData.brands[2].brand,
-                            feed_id:form.querySelector('[name="feed_id"]').value,
+						axios.post("partner-store", {
+                            org_id: form.querySelector('[name="organizations"]').value,
+                            partners_name: form.querySelector('[name="name"]').value,
+                            partners_id: form.querySelector('[name="partnerid"]').value,
+			
                         }).then(function (response) {
                             console.log(response);
                             if (response.data.status) {
-                                    Swal.fire({
+                                // form.querySelector('[name="role_name"]').value=" ";
+                                // form.querySelector('[name="email"]').value=" ";
+								// form.querySelector('[name="address"]').value=" ";
+                                Swal.fire({
                                     text: response.data.message,
                                     icon: "success",
                                     buttonsStyling: false,
@@ -175,7 +113,7 @@ var KTModalCustomersAdd = function () {
                                     confirmButton: "btn btn-primary"
                                 }
                             });
-                        });  				
+                        });   						
 					} else {
 						Swal.fire({
 							text: "Sorry, looks like there are some errors detected, please try again.",
@@ -193,7 +131,11 @@ var KTModalCustomersAdd = function () {
 
         cancelButton.addEventListener('click', function (e) {
             e.preventDefault();
-
+            var emptyVal=$("#kt_modal_add_customer_form input").filter(function () {
+                return $.trim($(this).val()).length == 0
+            }).length;
+            console.log(emptyVal);
+            if(emptyVal < 1){
             Swal.fire({
                 text: "Are you sure you would like to cancel?",
                 icon: "warning",
@@ -207,9 +149,9 @@ var KTModalCustomersAdd = function () {
                 }
             }).then(function (result) {
                 if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal	
-                    location.reload(true);			
+                    $('#org_id').val(0);
+                    document.querySelector('#kt_modal_add_customer_form').reset(); // Reset form	
+                    modal.hide(); // Hide modal				
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
                         text: "Your form has not been cancelled!.",
@@ -222,11 +164,20 @@ var KTModalCustomersAdd = function () {
                     });
                 }
             });
+        }else{
+            $('#org_id').val('0');
+            document.querySelector('#kt_modal_add_customer_form').reset(); // Reset form	
+            modal.hide(); // Hide modal				
+        }
         });
 
 		closeButton.addEventListener('click', function(e){
 			e.preventDefault();
-
+            var emptyVal=$("#kt_modal_add_customer_form input").filter(function () {
+                return $.trim($(this).val()).length == 0
+            }).length;
+            console.log(emptyVal);
+            if(emptyVal < 3){
             Swal.fire({
                 text: "Are you sure you would like to cancel?",
                 icon: "warning",
@@ -240,9 +191,10 @@ var KTModalCustomersAdd = function () {
                 }
             }).then(function (result) {
                 if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal	
-                    location.reload(true);			
+                   // form.querySelector('[name="org_id"]').value="0";
+                    $('#org_id').val('0');
+                    document.querySelector('#kt_modal_add_customer_form').reset(); // Reset form	
+                    modal.hide(); // Hide modal				
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
                         text: "Your form has not been cancelled!.",
@@ -255,6 +207,11 @@ var KTModalCustomersAdd = function () {
                     });
                 }
             });
+            }else{
+                $('#org_id').val('0');
+                document.querySelector('#kt_modal_add_customer_form').reset(); // Reset form	
+                modal.hide(); // Hide modal				
+            }
 		})
     }
 
@@ -262,12 +219,12 @@ var KTModalCustomersAdd = function () {
         // Public functions
         init: function () {
             // Elements
-            modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_feeds'));
+            modal = new bootstrap.Modal(document.querySelector('#kt_modal_add_customer'));
 
-            form = document.querySelector('#kt_modal_add_feeds_form');
-            submitButton = form.querySelector('#kt_modal_add_feeds_submit');
-            cancelButton = form.querySelector('#kt_modal_add_feeds_cancel');
-			closeButton = form.querySelector('#kt_modal_add_feeds_close');
+            form = document.querySelector('#kt_modal_add_customer_form');
+            submitButton = form.querySelector('#kt_modal_add_customer_submit');
+            cancelButton = form.querySelector('#kt_modal_add_customer_cancel');
+			closeButton = form.querySelector('#kt_modal_add_customer_close');
 
             handleForm();
         }

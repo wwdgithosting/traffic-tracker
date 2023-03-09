@@ -16,7 +16,7 @@ License: For each use you must have a valid license purchased only from above li
 
 <head>
   <base href="../../../" />
-  <title>Metronic - The World's #1 Selling Bootstrap Admin Template by Keenthemes</title>
+  <title>Traffic Tracker</title>
   <meta charset="utf-8" />
   <meta name="description" content="The most advanced Bootstrap 5 Admin Theme with 40 unique prebuilt layouts on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel versions. Grab your copy now and get life-time updates for free." />
   <meta name="keywords" content="metronic, bootstrap, bootstrap 5, angular, VueJs, React, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel starter kits, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
@@ -81,8 +81,8 @@ License: For each use you must have a valid license purchased only from above li
         <!--begin::Aside-->
         <div class="d-flex flex-center flex-lg-start flex-column">
           <!--begin::Logo-->
-          <a href="javascript:void(0)" class="mb-7" >
-            <img alt="Logo" src="{{asset('assets/media/logos/logo-no-background.png')}}" style="width:300px;"/>
+          <a href="javascript:void(0)" class="mb-7">
+            <img alt="Logo" src="{{asset('assets/media/logos/logo-no-background.png')}}" style="width:300px;" />
           </a>
           <!--end::Logo-->
           <!--begin::Title-->
@@ -175,8 +175,8 @@ License: For each use you must have a valid license purchased only from above li
                 @endif
                 <!--end::Submit button-->
                 <!--begin::Sign up-->
-                <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?
-                  <a href="javascript:void(0)" class="link-primary">Sign up</a>
+                <div class="text-gray-500 text-center fw-semibold fs-6">Forgot Password?
+                  <a href="{{route('forgot.password')}}" class="link-primary">Click Here</a>
                 </div>
                 <!--end::Sign up-->
               </form>

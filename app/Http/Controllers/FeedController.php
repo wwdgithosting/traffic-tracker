@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\FeedURL;
 use App\Models\Partner;
 use App\Models\FeedURLSubID;
+use App\Models\Organisation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -25,17 +26,25 @@ class FeedController extends Controller
     {
         $authUser = Auth::user();
         if ($authUser->roles == 1) {
-            $patners = Partner::get();
+            $data['organisations'] = Organisation::all();
         } else if ($authUser->roles == 2) {
-            $patners = Partner::where('org_id', $authUser->company)->get();
+            $data['organisations'] = Organisation::where('id', $authUser->company)->get();
+            $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
+                $join->on('partners.authUser', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.org_id', $authUser->company);
+            })->get();
         } else {
-            $patners = Partner::where('org_id', $authUser->company)->get();
+            $data['organisations'] = Organisation::where('id', $authUser->company)->get();
+            $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
+                $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.org_id', $authUser->company);
+            })->get();
         }
-        $data['patners'] = $patners;
+
         if ($authUser->roles == 1) {
-            $feeds = Feed::with('patners')->paginate(10);
+            $feeds = Feed::with(['partners', 'organisation'])->paginate(10);
         } else {
-            $feeds = Feed::with('patners')->where('created_user_id', $authUser->company)->paginate(10);
+            $feeds = Feed::with(['partners', 'organisation'])->where('created_user_id', $authUser->company)->paginate(10);
         }
         // $i = 0;
         // foreach ($feeds as $feed) {
@@ -77,7 +86,9 @@ class FeedController extends Controller
         try {
 
 
-            $feed['name'] = $request->name;
+            $feed['name'] = $request->partner;
+            $feed['org_id'] = $request->organization_name;
+            $feed['feed_title'] = $request->feed_title;
             $feed['limit'] = $request->limit;
             $feed['ip_limit'] = $request->ip_limit;
             $feed['sid_limit'] = $request->sid_limit;
@@ -207,5 +218,16 @@ class FeedController extends Controller
         FeedURLSubID::where('feed_id', $id)->delete();
         Feed::where('id')->delete();
         return ['status' => true, 'message' => 'Record Deleted'];
+    }
+
+    public function get_partners($id)
+    {
+        // DB::enableQueryLog();
+        $partners = Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($id) {
+            $join->on('partners.id', '=', 'organization_partners.partner_id')
+                ->where('organization_partners.org_id', $id);
+        })->get();
+        //  DD(DB::getQueryLog());
+        return $partners;
     }
 }

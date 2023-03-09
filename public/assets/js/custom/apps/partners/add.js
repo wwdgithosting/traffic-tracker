@@ -61,10 +61,10 @@ var KTModalCustomersAdd = function () {
 						submitButton.setAttribute('data-kt-indicator', 'on');
 
 						// Disable submit button whilst loading
-						submitButton.disabled = true;
+						//submitButton.disabled = true;
 
 						axios.post("partner-store", {
-                            org_id: form.querySelector('[name="organizations"]').value,
+                            org_id: $("#organizations").val(),
                             partners_name: form.querySelector('[name="name"]').value,
                             partners_id: form.querySelector('[name="partnerid"]').value,
 			

@@ -118,16 +118,36 @@
 								</div>
 								<div class="modal-body py-10 px-lg-17">
 									<div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_customer_header" data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+
 										<div class="fv-row mb-7">
-											<label class="required fs-6 fw-semibold mb-2">Name</label>
+											<label class="required fs-6 fw-semibold mb-2">Organisation</label>
 											<input type="hidden" name="feed_id" id="feed_id" value="0">
-											<select class="form-control form-control-solid feedname" name="feedname">
+											<select class="form-control form-control-solid organization_name" name="organization_name">
 												<option value="">---select---</option>
-												@foreach($patners as $patner)
-												<option value="{{$patner->id}}">{{$patner->partners_name}}</option>
+												@foreach($organisations as $organisation)
+												<option value="{{$organisation->id}}">{{$organisation->org_name}}</option>
 												@endforeach
 											</select>
 											<!-- <input type="text" class="form-control form-control-solid" placeholder="" name="feedname" value="" /> -->
+										</div>
+
+										<div class="fv-row mb-7">
+											<label class="required fs-6 fw-semibold mb-2">Partner</label>
+
+											<select class="form-control form-control-solid partner" name="partner">
+												<option value="">---select---</option>
+
+												@if(auth()->user()->roles!=1)
+												@foreach($patners as $patner)
+												<option value="{{$patner->id}}">{{$patner->partners_name}}</option>
+												@endforeach
+												@endif
+											</select>
+											<!-- <input type="text" class="form-control form-control-solid" placeholder="" name="feedname" value="" /> -->
+										</div>
+										<div class="fv-row mb-7">
+											<label class="required fs-6 fw-semibold mb-2">Feed Title</label>
+											<input type="text" class="form-control form-control-solid feed_title" placeholder="" name="feed_title" value="" />
 										</div>
 										<div class="fv-row mb-7">
 											<label class="required fs-6 fw-semibold mb-2">Limit</label>
@@ -293,6 +313,52 @@
 	</div>
 
 </div>
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form class="form" action="#" id="kt_modal_add_feeds_form" data-kt-redirect="#">
+				<div class="modal-header" id="kt_modal_add_feeds_header">
+					<h2 class="fw-bold">Feed URL Lists</h2>
+					<div id="kt_modal_view_feeds_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+						<span class="svg-icon svg-icon-1">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+								<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+							</svg>
+						</span>
+					</div>
+				</div>
+				<div class="modal-body py-10 px-lg-17">
+					<div class="scroll-y me-n7 pe-7" id="kt_modal_view_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_customer_header" data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+
+
+
+
+						<div id="kt_modal_add_customer_billing_info11" class="">
+
+							<div class="d-flex flex-column mb-7 fv-row repeter-row-view">
+
+							</div>
+							<div class="d-flex flex-column mb-7 fv-row">
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+				<div class="modal-footer flex-center">
+
+
+
+				</div>
+
+			</form>
+
+		</div>
+	</div>
+</div>
 <script>
 	$(window).on('hashchange', function() {
 		if (window.location.hash) {
@@ -338,6 +404,86 @@
 	}
 
 	$(document).ready(function() {
+		$(document).on('click', '#kt_modal_view_feeds_close', function() {
+			$('.bd-example-modal-lg').modal('hide');
+		})
+
+		$(document).on('click', '.info', function() {
+			$('.repeter-row').html('')
+			var html = '';
+			var userURL = "{{url('/').'/feed-edit'}}/" + $(this).data('id');
+			$.get(userURL, function(data) {
+				console.log(JSON.parse(data).length);
+				FeedURLDetails = JSON.parse(data);
+				// let i = 0;
+				$.each(FeedURLDetails, function(key, value) {
+					console.log(value);
+					let html = '';
+					let sub_id_arr = value.sub_ids;
+					console.log(sub_id_arr.length);
+					key = key + 1;
+					let htmlsub = '';
+					$.each(sub_id_arr, function(key1, val1) {
+						//key1 = key1 + 1;
+						if (key1 == 0) {
+							key1 = 1;
+						}
+						htmlsub += `
+							<div class="row g-9 " id="sub-row-${key}">
+							<div class="col-md-6 > 
+							<label class="fs-6 fw-semibold ">Sub ID</label>
+							<label class="fs-6 fw-semibold ">${val1.sub_id}</label>
+							</div> 
+							<div class="col-md-2 > 
+							<label class="fs-6 fw-semibold ">Limit</label>
+							<label class="fs-6 fw-semibold ">${val1.limit}</label>
+							</div> 
+							<div class="col-md-4 > 
+							<label class="fs-6 fw-semibold ">&nbsp;</label> 
+							</div>
+							</div>`;
+					});
+					html += `<div class="row g-9 " id="row-${key}"><hr> 
+							<div class="col-md-10"> 
+							<label class="fs-6 fw-semibold ">Feed URL</label> 
+							<label class="fs-6 fw-semibold ">${value.feed_url}</label> 
+							</div> 
+							<div class="col-md-2"> 
+							<label class="fs-6 fw-semibold ">Limit</label>
+							<label class="fs-6 fw-semibold ">${value.limit}</label>
+							</div>
+							` + htmlsub + `
+							</div>`;
+					$('.repeter-row-view').append(html)
+					// if ($('.count-index').val() == ' ') {
+					// 	$('.count-index').val(key)
+					// } else {
+					// 	var indxval = $('.count-index').val();
+					// 	$('.count-index').val(indxval + ',' + key);
+					// }
+
+
+
+				});
+
+			});
+			$('.bd-example-modal-lg').modal('show');
+		})
+
+		$(document).on('change', '.organization_name', function() {
+			var id = $(this).val();
+			$('.partner').html(' ');
+			$.ajax({
+				url: '{{url("/")."/get-partners"}}/' + id,
+				type: 'GET',
+				success: function(data) {
+					console.log(data);
+					for (var index = 0; index <= data.length; index++) {
+						$('.partner').append('<option value="' + data[index].id + '">' + data[index].partners_name + '</option>');
+					}
+				}
+			})
+		})
 		var i = 1;
 		$(document).on('click', '.add-row', function() {
 			var indxval = $('.count-index').val();
@@ -400,7 +546,24 @@
 			var FeedURLDetails = '';
 			var userURL = "{{url('/').'/feed-edit'}}/" + feedDetails.id;
 			$('#feed_id').val(feedDetails.id);
-			$('.feedname').val(feedDetails.name);
+			$('.partner').html('');
+			$('.organization_name').val(feedDetails.org_id);
+
+			$.ajax({
+				url: '{{url("/")."/get-partners"}}/' + feedDetails.org_id,
+				type: 'GET',
+				success: function(data) {
+					console.log(data);
+					for (var index = 0; index <= data.length; index++) {
+						if (data[index].id == feedDetails.name)
+							$('.partner').append('<option value="' + data[index].id + '" selected >' + data[index].partners_name + '</option>');
+						else
+							$('.partner').append('<option value="' + data[index].id + '" selected >' + data[index].partners_name + '</option>');
+					}
+				}
+			})
+
+			$('.feed_title').val(feedDetails.feed_title);
 			$('.limit').val(feedDetails.limit);
 			$('.description').val(feedDetails.notes);
 			$('.fallback_feed_url').val(feedDetails.fallback_feed_url);

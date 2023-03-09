@@ -16,10 +16,24 @@ var KTModalCustomersAdd = function () {
 			form,
 			{
 				fields: {
-                    'feedname': {
+                    'organization_name': {
 						validators: {
 							notEmpty: {
-								message: 'Partner name is required'
+								message: 'Organization name is required'
+							}
+						}
+					},
+                    'partner': {
+						validators: {
+							notEmpty: {
+								message: 'partner name is required'
+							}
+						}
+					},
+                    'feed_title': {
+						validators: {
+							notEmpty: {
+								message: 'feed title is required'
 							}
 						}
 					},
@@ -117,7 +131,9 @@ var KTModalCustomersAdd = function () {
                       
 
 						axios.post("feed-store", {
-                            name: form.querySelector('[name="feedname"]').value,
+                            organization_name: form.querySelector('[name="organization_name"]').value,
+                            partner: form.querySelector('[name="partner"]').value,
+                            feed_title: form.querySelector('[name="feed_title"]').value,
 							limit: form.querySelector('[name="limit"]').value,
 							notes: form.querySelector('[name="description"]').value,
                             feeds: feed_urls,

@@ -6,13 +6,12 @@
             <th>ID</th>
             <th>Feed Name</th>
             <th>Limit</th>
-            <th>Partner</th>
-            <th>Organization</th>
+            <th>Organisation</th>
             <th>IP Limit</th>
             <th>Sub ID Limit</th>
             <th>Feed Url Waterfall</th>
-            <th>Random Feed URL</th>
-            <th>Latency Test</th>
+            <th>Randomise</th>
+            <th>Browser</th>
             <th>Create Date</th>
             <th class="text-end min-w-70px">Actions</th>
         </tr>
@@ -27,16 +26,14 @@
             <td>{{$feed->id}}</td>
             <td>
                 <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1 edit-row" data-details="{{$feed}}" data-id="{{$feed->id}}">{{$feed->feed_title}}</a>
-                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1 info" data-details="{{$feed}}" data-id="{{$feed->id}}"> <i class="fa fa-info-circle text-info" aria-hidden="true"></i></a>
             </td>
             <td><a href="#" class="text-gray-600 text-hover-primary mb-1">{{$feed->limit}}</a></td>
-            <td>{{$feed->partners->partners_name}}</td>
-            <td>{{$feed->organisation->org_name}}</td>
+            <td>{{$feed->ip}}</td>
             <td>@if($feed->ip_limit==1) <i class="fa fa-check-circle text-success" aria-hidden="true"></i>@else<i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>@endif</td>
             <td>@if($feed->sid_limit==1) <i class="fa fa-check-circle text-success" aria-hidden="true"></i>@else<i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>@endif</td>
             <td>@if($feed->feed_url_waterfall==1) <i class="fa fa-check-circle text-success" aria-hidden="true"></i>@else<i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>@endif</td>
             <td>@if($feed->randomise==1) <i class="fa fa-check-circle text-success" aria-hidden="true"></i>@else<i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>@endif</td>
-            <td>@if($feed->latency_test==1) <i class="fa fa-check-circle text-success" aria-hidden="true"></i>@else<i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i>@endif</td>
+            <td>{{$feed->browser}}</td>
             <td>{{date('Y-m-d',strtotime($feed->created_at))}}</td>
 
             <td class="text-end">

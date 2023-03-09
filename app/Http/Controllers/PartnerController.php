@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Organisation;
 use App\Models\Partner;
+use App\Models\organization_partner;
 use Validator;
 use DB;
 
@@ -17,8 +18,23 @@ class PartnerController extends Controller
      */
     public function index()
     {
-        $data['orgs'] = Organisation::all();
-        $data['partners'] = Partner::with('organization')->get();
+        $user = auth()->user();
+
+        if ($user->roles == 1) {
+            $data['orgs'] = Organisation::all();
+            $data['partners'] = Partner::with(['organisations' => function ($query) {
+                $query->select('id', 'org_name', 'organisations.status');
+            }])->get();
+        } else {
+            $data['orgs'] = Organisation::where('id', $user->company)->get();
+            $data['partners'] = Partner::with(['organisations' => function ($query) use ($user) {
+                $query->select('id', 'org_name', 'organisations.status');
+                $query->where('org_id', $user->company);
+            }])->get();
+        }
+
+
+
         return view('partners.index', $data);
     }
 
@@ -41,7 +57,7 @@ class PartnerController extends Controller
     {
         if ($request->isMethod('post')) {
             $index = $request->all();
-            // return $request->all();
+            $request->all();
             $validator = Validator::make($index, [
                 'partners_name' => 'required',
                 'org_id' => 'required',
@@ -51,33 +67,69 @@ class PartnerController extends Controller
                 return ['status' => false, 'message' => 'field missing'];
             }
 
-            try {
-                $menu = [
-                    'partners_name' => $request->partners_name,
-                    'org_id' => $request->org_id,
-                    'status' =>  1,
-                ];
-                // return $menu;
-                if ($request->partners_id == 0) {
-                    $m = Partner::create($menu);
-                    if ($m->id > 0) {
+            //try {
+            $menu = [
+                'partners_name' => $request->partners_name,
+                'org_id' => implode(',', $request->org_id),
+                'status' =>  1,
+            ];
+            // return $menu;
+            if ($request->partners_id == 0) {
+                $m = Partner::create($menu);
+                if ($m->id > 0) {
+                    if (count($request->org_id) > 0) {
+                        foreach ($request->org_id as $org_id) {
+                            $po['org_id'] = $org_id;
+                            $po['partner_id'] = $m->id;
 
-                        return ['status' => true, 'message' => 'Record saved'];
-                    } else {
-                        return ['status' => false, 'message' => 'Unable to save record'];
+                            organization_partner::create($po);
+                        }
                     }
+                    return ['status' => true, 'message' => 'Record saved'];
                 } else {
-                    $m = Partner::where('id', $request->partners_id)->update($menu);
-                    if ($m) {
-
-                        return ['status' => true, 'message' => 'Record Updated'];
-                    } else {
-                        return ['status' => false, 'message' => 'Unable to update record'];
-                    }
+                    return ['status' => false, 'message' => 'Unable to save record'];
                 }
-            } catch (\Throwable $th) {
-                return ['status' => false, 'message' => 'something went wrong'];
+            } else {
+                $m = Partner::where('id', $request->partners_id)->update($menu);
+                if ($m) {
+                    $orgs = organization_partner::where('partner_id', $request->partners_id)->pluck('org_id');
+                    if (count($request->org_id) > 0) {
+                        if (count($orgs) > 0) {
+
+                            foreach ($orgs as $org_id) {
+                                if (!in_array($org_id, $request->org_id)) {
+                                    $po['org_id'] = $org_id;
+                                    $po['partner_id'] = $request->partners_id;
+                                    organization_partner::create($po);
+                                }
+                            }
+                        } else {
+                            foreach ($request->org_id as $org_id) {
+                                $po['org_id'] = $org_id;
+                                $po['partner_id'] = $request->partners_id;
+
+                                organization_partner::create($po);
+                            }
+                        }
+                    } else {
+
+                        if (count($request->org_id) > 0) {
+                            foreach ($request->org_id as $org_id) {
+                                $po['org_id'] = $org_id;
+                                $po['partner_id'] = $request->partners_id;
+
+                                organization_partner::create($po);
+                            }
+                        }
+                    }
+                    return ['status' => true, 'message' => 'Record Updated'];
+                } else {
+                    return ['status' => false, 'message' => 'Unable to update record'];
+                }
             }
+            // } catch (\Throwable $th) {
+            //     return ['status' => false, 'message' => 'something went wrong'];
+            // }
         } else {
             return ['status' => false, 'message' => 'No record found'];
         }

@@ -100,7 +100,8 @@
 								<tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
 									<th>ID</th>
 									<th>Partner Name</th>
-									<th class="min-w-125px">Organization</th>
+
+									<th class="min-w-125px" colspan="3">Organization</th>
 									<th class="min-w-125px">Created Date</th>
 									<th class="text-end min-w-70px">Actions</th>
 								</tr>
@@ -116,8 +117,13 @@
 									<td>
 										<a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1 edit-org" data-details="{{$partner}}">{{$partner->partners_name}}</a>
 									</td>
-									<td>{{$partner->organization->org_name}}</td>
 
+									<td colspan="3">
+										@foreach($partner->organisations as $org)
+
+										<span class="badge badge-secondary">{{$org->org_name}}</span>
+										@endforeach
+									</td>
 									<td>{{$partner->created_at}}</td>
 
 									<td class="text-end">
@@ -202,7 +208,7 @@
 												<!-- <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip" title="Email address must be active"></i> -->
 											</label>
 
-											<select class="form-control form-control-solid" id="organizations" name="organizations">
+											<select class="form-control form-control-solid" id="organizations" name="organizations[]" multiple="multiple">
 												<option value="">--Select Organization--</option>
 												@foreach($orgs as $org)
 												<option value="{{$org->id}}">{{$org->org_name}}</option>
@@ -357,12 +363,13 @@
 </div>
 <script>
 	$(document).ready(function() {
+		$('#organizations').select2();
 		$(document).on('click', '.edit-org', function() {
 			var userData = $(this).data('details');
 
 			$('#orgid').val(userData.id);
 			$('#name').val(userData.partners_name);
-			$('#organizations').val(userData.org_id)
+			$('#organizations').val(userData.org_id).trigger("change");
 			$('#kt_modal_add_customer').modal('show');
 		})
 

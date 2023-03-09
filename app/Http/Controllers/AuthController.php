@@ -44,4 +44,10 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    public function forgotpassword()
+    {
+
+        return view('login.forgotpassword');
+    }
 }

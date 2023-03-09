@@ -33,7 +33,9 @@ class Feed extends Model
         'browser_language',
         'referrer',
         'ip',
-        'created_user_id'
+        'created_user_id',
+        'org_id',
+        'feed_title'
 
     ];
 
@@ -42,8 +44,13 @@ class Feed extends Model
         return $this->belongsTo(User::class, 'name', 'id');
     }
 
-    public function patners()
+    public function partners()
     {
         return $this->belongsTo(Partner::class, 'name', 'id');
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class, 'org_id', 'id');
     }
 }

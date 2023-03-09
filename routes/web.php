@@ -24,6 +24,7 @@ Route::get('/', function () {
 })->name('login')->middleware('guest');
 Route::get('logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('post-login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login.post');
+Route::post('forgot-password', [App\Http\Controllers\AuthController::class, 'forgotpassword'])->name('forgot.password');
 
 Route::middleware(['auth'])->group(function () {
     Route::controller(DashboardController::class)->group(function () {
@@ -75,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('feed-edit/{id}', 'edit')->name('-edit');
         Route::get('feed-delete/{id}', 'destroy')->name('-delete');
         Route::post('feed-update', 'update')->name('-update');
+        Route::get('get-partners/{id}', 'get_partners')->name('-partners');
         // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
     });

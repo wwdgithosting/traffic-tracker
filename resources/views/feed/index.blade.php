@@ -377,7 +377,7 @@
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary close-modal">Close</button>
 						<button type="submit" class="btn btn-primary">Save changes</button>
-						<input type="submit" class="btn btn-primary" value="Save">
+
 					</div>
 				</form>
 			</div>

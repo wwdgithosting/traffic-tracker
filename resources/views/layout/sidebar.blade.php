@@ -129,7 +129,7 @@ $permissions=App\Models\UserRolePermission::where('user_role_id',$userDetails->r
                 </div>
                 @endif
                 @if(in_array(15,$permissions))
-                <div data-kt-menu-trigger="click" class="menu-item  menu-accordion @if(Route::current()->getName() === 'feed')
+                <div data-kt-menu-trigger="click" class="menu-item  menu-accordion @if((Route::current()->getName() === 'feed-feed') || Route::current()->getName() === 'feed-log')
                 here show @endif">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -145,11 +145,19 @@ $permissions=App\Models\UserRolePermission::where('user_role_id',$userDetails->r
                     </span>
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link @if(Route::current()->getName() === 'feed') active @endif" href="{{route('feed')}}">
+                            <a class="menu-link @if(Route::current()->getName() === 'feed-feed') active @endif" href="{{route('feed-feed')}}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">Feed</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link @if(Route::current()->getName() === 'feed-log') active @endif" href="{{route('feed-log')}}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Feed Log</span>
                             </a>
                         </div>
                     </div>

@@ -73,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::controller(FeedController::class)->as('feed')->group(function () {
-        Route::get('feed', 'index');
+        Route::get('feed', 'index')->name('-feed');
         Route::post('feed-store', 'store')->name('-store');
         Route::get('feed-edit/{id}', 'edit')->name('-edit');
         Route::get('feed-delete/{id}', 'destroy')->name('-delete');
@@ -82,7 +82,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('get-partners/{id}', 'get_partners')->name('-partners');
         // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
-        Route::get('log', 'feedLogList');
+        Route::get('log', 'feedLogList')->name('-log');
         Route::post('log', 'feedLogList')->name('-log');
     });
 

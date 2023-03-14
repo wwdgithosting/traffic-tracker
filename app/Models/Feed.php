@@ -11,6 +11,7 @@ class Feed extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
+        'id',
         'name',
         'limit',
         'feed_url',

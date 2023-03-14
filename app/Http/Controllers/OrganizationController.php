@@ -130,4 +130,17 @@ class OrganizationController extends Controller
         $org->delete();
         return ['status' => true, 'message' => 'Record deleted'];
     }
+
+    public function change_status($id)
+    {
+        $org = Organisation::where(['id' => $id]);
+        if ($org->status) {
+            $org->update(['status' => 0]);
+            $msg = 'Organization successfully inactive';
+        } else {
+            $org->update(['status' => 1]);
+            $msg = 'Organization successfully activate';
+        }
+        return ['status' => true, 'message' => $msg];
+    }
 }

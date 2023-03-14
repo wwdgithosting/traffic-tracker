@@ -24,8 +24,10 @@ Route::get('/', function () {
 })->name('login')->middleware('guest');
 Route::get('logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('post-login', [App\Http\Controllers\AuthController::class, 'postLogin'])->name('login.post');
-Route::post('forgot-password', [App\Http\Controllers\AuthController::class, 'forgotpassword'])->name('forgot.password');
-
+Route::get('forgot-password', [App\Http\Controllers\AuthController::class, 'forgotpassword'])->name('forgot.password');
+Route::post('forget-password', [App\Http\Controllers\AuthController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
+Route::get('reset-password/{token}', [App\Http\Controllers\AuthController::class, 'showResetPasswordForm'])->name('reset.password.get');
+Route::post('reset.password.post', [App\Http\Controllers\AuthController::class, 'submitResetPasswordForm'])->name('reset.password.post');
 Route::middleware(['auth'])->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('dashboard', 'index')->name('dashboard');
@@ -65,8 +67,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('user-store', 'store')->name('-store');
         Route::get('user-edit/{id}', 'edit')->name('-edit');
         Route::get('user-delete/{id}', 'destroy')->name('-delete');
-        Route::post('user-update', 'update')->name('-update');
-        // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
+        Route::post('user-update', 'update_profile')->name('-update');
+        Route::get('user-status-change/{id}', 'change_status')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
     });
 
@@ -76,9 +78,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('feed-edit/{id}', 'edit')->name('-edit');
         Route::get('feed-delete/{id}', 'destroy')->name('-delete');
         Route::post('feed-update', 'update')->name('-update');
+        Route::post('feed-import', 'importFeedLog')->name('-import');
         Route::get('get-partners/{id}', 'get_partners')->name('-partners');
         // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
+        Route::get('log', 'feedLogList');
+        Route::post('log', 'feedLogList')->name('-log');
     });
 
     Route::controller(PartnerController::class)->as('partner')->group(function () {
@@ -87,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('partner-edit/{id}', 'edit')->name('-edit');
         Route::get('partner-delete/{id}', 'destroy')->name('-delete');
         Route::post('partner-update', 'update')->name('-update');
-        // Route::get('menu-status-change/{id}', 'update')->name('-status-change');
+        Route::get('partner-status-change/{id}', 'change_status')->name('-status-change');
         // Route::get('menu-add-previledges/{id}', 'add_previledges')->name('-add-previledges');
     });
 });

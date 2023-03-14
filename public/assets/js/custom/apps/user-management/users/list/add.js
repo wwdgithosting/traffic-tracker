@@ -91,7 +91,7 @@ var KTUsersAddUser = function () {
                         var formData = new FormData(form);
                         $.ajax({
                             type: 'POST',
-                            url: "https://dash.traffktrackr.com/user-store",
+                            url: "http://127.0.0.1:8000/user-store",
                             data: formData,
                             cache: false,
                             contentType: false,

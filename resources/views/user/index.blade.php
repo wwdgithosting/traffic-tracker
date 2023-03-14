@@ -376,7 +376,7 @@
 										<div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
 											<a href="javascript:void(0)">
 												<div class="symbol-label">
-													<img src="{{($user->profile_image !='' ) ? url('/').'/public/uploads/photos/'.$user->profile_image : asset('/public/assets/media/avatars/blank.png')}} " alt="{{$user->firstname.' '.$user->lastname}}" class="w-100" />
+													<img src="{{($user->profile_image !='' ) ? url('/').'/public/uploads/photos/'.$user->profile_image : asset('/public/assets/media/avatars/blank.png')}}" alt="{{$user->firstname.' '.$user->lastname}}" class="w-100" />
 												</div>
 											</a>
 										</div>
@@ -415,7 +415,10 @@
 											</div>
 
 											<div class="menu-item px-3">
-												<a href="#" class="menu-link px-3 delete-user" data-id="{{$user->id}}" data-kt-users-table-filter="delete_row">Delete</a>
+												<a href="javascript:void(0)" class="menu-link px-3 delete-user" data-id="{{$user->id}}" data-kt-users-table-filter="delete_row">Delete</a>
+											</div>
+											<div class="menu-item px-3">
+												<a href="javascript:void(0)" class="menu-link px-3 active-user {{($user->status) ? 'text-success':'text-danger'}}" data-id="{{$user->id}}" data-status={{$user->status}}>{{($user->status) ? 'Active':'Inactive'}}</a>
 											</div>
 
 										</div>
@@ -447,7 +450,7 @@
 		$(document).on('click', '.edit-user', function() {
 			var userData = $(this).data('details');
 			console.log(userData);
-			var imageUrl = (userData.profile_image != null) ? '/public/uploads/photos/' + userData.profile_image : 'public/assets/media/avatars/blank.png';
+			var imageUrl = (userData.profile_image != null) ? '/public/uploads/photos/' + userData.profile_image : '/assets/media/avatars/blank.png';
 			console.log(imageUrl)
 			$('#userid').val(userData.id);
 			$('#firstname').val(userData.firstname);
@@ -484,6 +487,75 @@
 						Swal.fire({
 							text: data.message,
 							icon: "error",
+							buttonsStyling: false,
+							confirmButtonText: "Ok, got it!",
+							customClass: {
+								confirmButton: "btn btn-primary",
+							}
+						}).then(function(result) {
+							if (result.value) {
+								location.reload(true);
+							} else if (result.dismiss === 'cancel') {
+								Swal.fire({
+									text: "Your form has not been cancelled!.",
+									icon: "error",
+									buttonsStyling: false,
+									confirmButtonText: "Ok, got it!",
+									customClass: {
+										confirmButton: "btn btn-primary",
+									}
+								});
+							}
+						});;
+
+					})
+
+				} else if (result.dismiss === 'cancel') {
+					Swal.fire({
+						text: "Your request has been cancelled!.",
+						icon: "error",
+						buttonsStyling: false,
+						confirmButtonText: "Ok, got it!",
+						customClass: {
+							confirmButton: "btn btn-primary",
+						}
+					});
+				}
+			});
+		});
+
+		$(document).on('click', '.active-user', function() {
+			var data_id = $(this).data('id');
+			var user_status = $(this).data('status');
+			var msg = '';
+
+			if (user_status == 1) {
+				msg = 'Are you sure you would like to inactive this user?';
+
+
+			} else {
+				msg = 'Are you sure you would like to active this user?'
+			}
+			Swal.fire({
+				text: msg,
+				icon: "warning",
+				showCancelButton: true,
+				buttonsStyling: false,
+				confirmButtonText: "Yes, change it!",
+				cancelButtonText: "No, return",
+				customClass: {
+					confirmButton: "btn btn-primary",
+					cancelButton: "btn btn-active-light"
+				}
+			}).then(function(result) {
+				if (result.value) {
+
+					var userURL = "{{url('/').'/user-status-change'}}/" + data_id;
+					$.get(userURL, function(data) {
+
+						Swal.fire({
+							text: data.message,
+							icon: "success",
 							buttonsStyling: false,
 							confirmButtonText: "Ok, got it!",
 							customClass: {

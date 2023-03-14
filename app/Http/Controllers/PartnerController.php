@@ -8,6 +8,7 @@ use App\Models\Partner;
 use App\Models\organization_partner;
 use Validator;
 use DB;
+use Illuminate\Support\Facades\Auth;
 
 class PartnerController extends Controller
 {
@@ -27,10 +28,16 @@ class PartnerController extends Controller
             }])->get();
         } else {
             $data['orgs'] = Organisation::where('id', $user->company)->get();
-            $data['partners'] = Partner::with(['organisations' => function ($query) use ($user) {
-                $query->select('id', 'org_name', 'organisations.status');
-                $query->where('org_id', $user->company);
-            }])->get();
+            // $data['partners'] = Partner::with(['organisations' => function ($query) use ($user) {
+            //     $query->select('id', 'org_name', 'organisations.status');
+            //     $query->where('org_id', $user->company);
+            // }])->get();
+            // DB::enableQueryLog();
+            $data['partners'] = Partner::select('partners.*', 'organization_partners.*', 'organization_partners.status as org_p_status')->join('organization_partners', function ($join) use ($user) {
+                $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.org_id', $user->company);
+            })->where('partners.status', 1)->get();
+            //dd(DB::getQueryLog());
         }
 
 
@@ -180,5 +187,33 @@ class PartnerController extends Controller
         $org = Partner::find($id);
         $org->delete();
         return ['status' => true, 'message' => 'Record deleted'];
+    }
+
+    public function change_status($id)
+    {
+        DB::enableQueryLog();
+        if (Auth::user()->roles > 1) {
+            $partner = organization_partner::where('org_id', Auth::user()->company)->where('partner_id', $id)->first();
+            // DD(DB::getQueryLog());
+            if ($partner->status) {
+                organization_partner::where('org_id', Auth::user()->company)->where('partner_id', $id)->update(['status' => 0]);
+                $msg = 'Partner successfully inactive';
+            } else {
+                organization_partner::where('org_id', Auth::user()->company)->where('partner_id', $id)->update(['status' => 1]);
+                $msg = 'Partner successfully activate';
+            }
+        } else {
+            $partner = Partner::find($id);
+            // DD(DB::getQueryLog());
+            if ($partner->status) {
+                $partner->update(['status' => 0]);
+                $msg = 'Partner successfully inactive';
+            } else {
+                $partner->update(['status' => 1]);
+                $msg = 'Partner successfully activate';
+            }
+        }
+
+        return ['status' => true, 'message' => $msg];
     }
 }

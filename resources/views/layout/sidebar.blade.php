@@ -1,3 +1,8 @@
+@php
+$userDetails=auth()->user();
+$permissions=App\Models\UserRolePermission::where('user_role_id',$userDetails->roles)->pluck('menu_id')->toArray();
+//dd($permissions);
+@endphp
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <a href="{{route('dashboard')}}">
@@ -35,6 +40,7 @@
                 </div> -->
                 <!--end:Menu item-->
                 <!--begin:Menu item-->
+                @if(in_array(12,$permissions) || in_array(11,$permissions) || in_array(10,$permissions))
                 <div data-kt-menu-trigger="click" class="menu-item  menu-accordion @if((Route::current()->getName() === 'user') || (Route::current()->getName() === 'role') || (Route::current()->getName() === 'menu'))
                 here show @endif">
                     <span class="menu-link">
@@ -50,6 +56,7 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion">
+                        @if(in_array(12,$permissions))
                         <div class="menu-item">
                             <a class="menu-link @if(Route::current()->getName() === 'user') active @endif" href="{{route('user')}}">
                                 <span class="menu-bullet">
@@ -58,6 +65,8 @@
                                 <span class="menu-title">Users</span>
                             </a>
                         </div>
+                        @endif
+                        @if(in_array(11,$permissions))
                         <div class="menu-item">
                             <a class="menu-link @if(Route::current()->getName() === 'role') active @endif" href="{{route('role')}}">
                                 <span class="menu-bullet">
@@ -66,6 +75,8 @@
                                 <span class="menu-title">Roles</span>
                             </a>
                         </div>
+                        @endif
+                        @if(in_array(10,$permissions))
                         <div class="menu-item">
                             <a class="menu-link @if(Route::current()->getName() === 'menu') active @endif" href="{{route('menu')}}">
                                 <span class="menu-bullet">
@@ -74,9 +85,11 @@
                                 <span class="menu-title">Permissions</span>
                             </a>
                         </div>
-
+                        @endif
                     </div>
                 </div>
+                @endif
+                @if(in_array(14,$permissions) || in_array(16,$permissions))
                 <div data-kt-menu-trigger="click" class="menu-item  menu-accordion @if(Route::current()->getName() === 'organization' || (Route::current()->getName() === 'partner'))
                 here show @endif">
                     <span class="menu-link">
@@ -92,6 +105,7 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion">
+                        @if(in_array(14,$permissions))
                         <div class="menu-item">
                             <a class="menu-link @if(Route::current()->getName() === 'organization' ) active @endif" href="{{route('organization')}}">
                                 <span class="menu-bullet">
@@ -100,6 +114,8 @@
                                 <span class="menu-title">Organization</span>
                             </a>
                         </div>
+                        @endif
+                        @if(in_array(16,$permissions))
                         <div class="menu-item">
                             <a class="menu-link @if(Route::current()->getName() === 'partner') active @endif" href="{{route('partner')}}">
                                 <span class="menu-bullet">
@@ -108,8 +124,11 @@
                                 <span class="menu-title">Partner</span>
                             </a>
                         </div>
+                        @endif
                     </div>
                 </div>
+                @endif
+                @if(in_array(15,$permissions))
                 <div data-kt-menu-trigger="click" class="menu-item  menu-accordion @if(Route::current()->getName() === 'feed')
                 here show @endif">
                     <span class="menu-link">
@@ -135,6 +154,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>

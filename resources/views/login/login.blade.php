@@ -16,7 +16,7 @@ License: For each use you must have a valid license purchased only from above li
 
 <head>
   <base href="../../../" />
-  <title>Traffic Tracker</title>
+  <title>{{ str_replace('-',' ',config('app.name', 'Laravel')) }}</title>
   <meta charset="utf-8" />
   <meta name="description" content="The most advanced Bootstrap 5 Admin Theme with 40 unique prebuilt layouts on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel versions. Grab your copy now and get life-time updates for free." />
   <meta name="keywords" content="metronic, bootstrap, bootstrap 5, angular, VueJs, React, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel starter kits, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
@@ -137,6 +137,7 @@ License: For each use you must have a valid license purchased only from above li
                 <div class="separator separator-content my-14">
                   <span class="w-125px text-gray-500 fw-semibold fs-7"></span>
                 </div>
+                <input type="hidden" name="recaptcha" id="recaptcha">
                 <!--end::Separator-->
                 <!--begin::Input group=-->
                 <div class="fv-row mb-8">
@@ -183,81 +184,7 @@ License: For each use you must have a valid license purchased only from above li
               <!--end::Form-->
             </div>
             <!--end::Wrapper-->
-            <!--begin::Footer-->
-            <div class="d-flex flex-stack">
-              <!--begin::Languages-->
-              <div class="me-10">
-                <!--begin::Toggle-->
-                <button class="btn btn-flex btn-link btn-color-gray-700 btn-active-color-primary rotate fs-base" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start" data-kt-menu-offset="0px, 0px">
-                  <img data-kt-element="current-lang-flag" class="w-20px h-20px rounded me-3" src="{{asset('assets/media/flags/united-states.svg')}}" alt="" />
-                  <span data-kt-element="current-lang-name" class="me-1">English</span>
-                  <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
-                  <span class="svg-icon svg-icon-5 svg-icon-muted rotate-180 m-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
-                    </svg>
-                  </span>
-                  <!--end::Svg Icon-->
-                </button>
-                <!--end::Toggle-->
-                <!--begin::Menu-->
-                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-4 fs-7" data-kt-menu="true" id="kt_auth_lang_menu">
-                  <!--begin::Menu item-->
-                  <div class="menu-item px-3">
-                    <a href="#" class="menu-link d-flex px-5" data-kt-lang="English">
-                      <span class="symbol symbol-20px me-4">
-                        <img data-kt-element="lang-flag" class="rounded-1" src="{{asset('assets/media/flags/united-states.svg')}}" alt="" />
-                      </span>
-                      <span data-kt-element="lang-name">English</span>
-                    </a>
-                  </div>
-                  <!--end::Menu item-->
-                  <!--begin::Menu item-->
-                  <div class="menu-item px-3">
-                    <a href="#" class="menu-link d-flex px-5" data-kt-lang="Spanish">
-                      <span class="symbol symbol-20px me-4">
-                        <img data-kt-element="lang-flag" class="rounded-1" src="{{asset('assets/media/flags/spain.svg')}}" alt="" />
-                      </span>
-                      <span data-kt-element="lang-name">Spanish</span>
-                    </a>
-                  </div>
-                  <!--end::Menu item-->
-                  <!--begin::Menu item-->
-                  <div class="menu-item px-3">
-                    <a href="#" class="menu-link d-flex px-5" data-kt-lang="German">
-                      <span class="symbol symbol-20px me-4">
-                        <img data-kt-element="lang-flag" class="rounded-1" src="{{asset('assets/media/flags/germany.svg')}}" alt="" />
-                      </span>
-                      <span data-kt-element="lang-name">German</span>
-                    </a>
-                  </div>
-                  <!--end::Menu item-->
-                  <!--begin::Menu item-->
-                  <div class="menu-item px-3">
-                    <a href="#" class="menu-link d-flex px-5" data-kt-lang="Japanese">
-                      <span class="symbol symbol-20px me-4">
-                        <img data-kt-element="lang-flag" class="rounded-1" src="{{asset('assets/media/flags/japan.svg')}}" alt="" />
-                      </span>
-                      <span data-kt-element="lang-name">Japanese</span>
-                    </a>
-                  </div>
-                  <!--end::Menu item-->
-                  <!--begin::Menu item-->
-                  <div class="menu-item px-3">
-                    <a href="#" class="menu-link d-flex px-5" data-kt-lang="French">
-                      <span class="symbol symbol-20px me-4">
-                        <img data-kt-element="lang-flag" class="rounded-1" src="{{asset('assets/media/flags/france.svg')}}" alt="" />
-                      </span>
-                      <span data-kt-element="lang-name">French</span>
-                    </a>
-                  </div>
-                  <!--end::Menu item-->
-                </div>
-                <!--end::Menu-->
-              </div>
-              <!--end::Languages-->
-            </div>
-            <!--end::Footer-->
+
           </div>
           <!--end::Card body-->
         </div>
@@ -282,5 +209,28 @@ License: For each use you must have a valid license purchased only from above li
   <!--end::Javascript-->
 </body>
 <!--end::Body-->
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.sitekey') }}" defer></script>
+<script defer>
+  $(document).ready(function() {
+    setRecaptchaToken();
+    // Every 90 Seconds
+    setInterval(function() {
+      setRecaptchaToken();
+    }, 90 * 1000);
+  });
+
+  function setRecaptchaToken() {
+    grecaptcha.ready(function() {
+      grecaptcha.execute('{{ config("captcha.sitekey") }}', {
+        action: 'login'
+      }).then(function(token) {
+        if (token) {
+          document.getElementById('recaptcha').value = token;
+          $('button[type="button"]').prop('disabled', false);
+        }
+      });
+    });
+  }
+</script>
 
 </html>

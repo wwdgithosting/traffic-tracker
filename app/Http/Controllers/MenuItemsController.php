@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MenuMaster;
-use Illuminate\Http\Request;
 use App\Models\UserRoleMaster;
+use Illuminate\Http\Request;
 use Validator;
 use DB;
 
@@ -61,39 +61,27 @@ class MenuItemsController extends Controller
                 'url' => 'required',
             ]);
             if ($validator->fails()) {
-                return back()
-                    ->with(['error', 'Field missing'])
-                    ->withInput();
+                return ['status' => false, 'message' => 'field missing'];
             }
 
             try {
                 $menu = [
-                    'menu_title' => $request->title,
+                    'menu_name' => $request->title,
                     'url' => $request->url,
                     'status' => ($request->is_active) ? 1 : 0,
                 ];
                 $m = MenuMaster::create($menu);
                 if ($m->id > 0) {
 
-
-
-                    return back()->with([
-                        'success' => 'Menu added successfully',
-                    ]);
+                    return ['status' => true, 'message' => 'Record saved'];
                 } else {
-                    return back()->with([
-                        'error' => 'Unable to save record',
-                    ]);
+                    return ['status' => false, 'message' => 'Unable to save record'];
                 }
             } catch (\Throwable $th) {
-                return back()->with([
-                    'error' => 'Something went wrong',
-                ]);
+                return ['status' => false, 'message' => 'something went wrong'];
             }
         } else {
-            return back()->with([
-                'error' => 'No data in post',
-            ]);
+            return ['status' => false, 'message' => 'No record found'];
         }
     }
 
@@ -126,7 +114,7 @@ class MenuItemsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //return $request->all();
         if ($request->isMethod('post')) {
@@ -136,41 +124,32 @@ class MenuItemsController extends Controller
                 'url' => 'required',
             ]);
             if ($validator->fails()) {
-                return back()
-                    ->with(['error', 'Field missing'])
-                    ->withInput();
+                return ['status' => false, 'message' => 'field missing'];
             }
 
             try {
                 $menu = [
-                    'menu_title' => $request->title,
+                    'menu_name' => $request->title,
                     'url' => $request->url,
                     'status' => ($request->is_active) ? 1 : 0,
                 ];
-                $m = MenuMaster::where('id', $id)->update($menu);
+                $m = MenuMaster::where('id', $request->id)->update($menu);
 
                 // return $m;
                 if ($m > 0) {
 
                     //die();
 
-                    return back()->with([
-                        'success' => 'Menu updated successfully',
-                    ]);
+                    return ['status' => true, 'message' => 'Record updated'];
                 } else {
-                    return back()->with([
-                        'error' => 'Unable to save record',
-                    ]);
+                    return ['status' => false, 'message' => 'Unable to update record'];
                 }
             } catch (\Throwable $th) {
-                return back()->with([
-                    'error' => 'Something went wrong',
-                ]);
+
+                return ['status' => false, 'message' => 'Something went wrong'];
             }
         } else {
-            return back()->with([
-                'error' => 'No data in post',
-            ]);
+            return ['status' => false, 'message' => 'No data post'];
         }
     }
 
@@ -186,13 +165,9 @@ class MenuItemsController extends Controller
         try {
             MenuMaster::where('id', $id)->delete();
 
-            return back()->with([
-                'success' => 'Menu deleted successfully',
-            ]);
+            return ['status' => true, 'message' => 'Record deleted'];
         } catch (\Throwable $th) {
-            return back()->with([
-                'error' => 'Something went wrong',
-            ]);
+            return ['status' => false, 'message' => 'something went wrong'];
         }
     }
 

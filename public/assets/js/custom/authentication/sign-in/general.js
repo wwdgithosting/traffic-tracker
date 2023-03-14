@@ -125,7 +125,8 @@ var KTSigninGeneral = function() {
                     // Check axios library docs: https://axios-http.com/docs/intro 
                     axios.post("post-login", {
                         email: form.querySelector('[name="email"]').value, 
-                        password: form.querySelector('[name="password"]').value 
+                        password: form.querySelector('[name="password"]').value ,
+                        recaptcha: form.querySelector('[name="recaptcha"]').value 
                     }).then(function (response) {
                         console.log(response.data);
                         if (response.data.status) {

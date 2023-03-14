@@ -68,24 +68,15 @@
 						<!--begin::Card title-->
 						<!--begin::Card toolbar-->
 						<div class="card-toolbar">
-							<!--begin::Toolbar-->
+
 							<div class="d-flex justify-content-end" data-kt-feed-table-toolbar="base">
-
-
-								<!--end::Export-->
-								<!--begin::Add customer-->
+								<button type="button" class="btn btn-primary import-feed">
+									Import Feed
+								</button>
 								<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_feeds">Add Feed</button>
-								<!--end::Add customer-->
 							</div>
-							<!--end::Toolbar-->
-							<!--begin::Group actions-->
-							<div class="d-flex justify-content-end align-items-center d-none" data-kt-feed-table-toolbar="selected">
-								<div class="fw-bold me-5">
-									<span class="me-2" data-kt-feed-table-select="selected_count"></span>Selected
-								</div>
-								<button type="button" class="btn btn-danger" data-kt-feed-table-select="delete_selected">Delete Selected</button>
-							</div>
-							<!--end::Group actions-->
+
+
 						</div>
 						<!--end::Card toolbar-->
 					</div>
@@ -125,7 +116,7 @@
 											<select class="form-control form-control-solid organization_name" name="organization_name">
 												<option value="">---select---</option>
 												@foreach($organisations as $organisation)
-												<option value="{{$organisation->id}}">{{$organisation->org_name}}</option>
+												<option value="{{$organisation->id}}" @if(auth()->user()->roles > 1) selected @endif>{{$organisation->org_name}}</option>
 												@endforeach
 											</select>
 											<!-- <input type="text" class="form-control form-control-solid" placeholder="" name="feedname" value="" /> -->
@@ -313,6 +304,7 @@
 	</div>
 
 </div>
+<!---modal for view feed--->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
@@ -330,31 +322,65 @@
 				</div>
 				<div class="modal-body py-10 px-lg-17">
 					<div class="scroll-y me-n7 pe-7" id="kt_modal_view_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_customer_header" data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
-
-
-
-
 						<div id="kt_modal_add_customer_billing_info11" class="">
-
 							<div class="d-flex flex-column mb-7 fv-row repeter-row-view">
-
 							</div>
 							<div class="d-flex flex-column mb-7 fv-row">
-
 							</div>
-
 						</div>
 					</div>
-
 				</div>
-
 				<div class="modal-footer flex-center">
-
-
-
 				</div>
-
 			</form>
+		</div>
+	</div>
+</div>
+<!--- modal for import feed-->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Import feed from CSV</h5>
+				<button type="button" class="close close-modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="{{route('feed-import')}}" enctype="multipart/form-data">
+					@csrf
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label">Organisations:</label>
+						<select class="form-control form-control-solid org_name" name="org_name">
+							<option value="">---select---</option>
+							@foreach($organisations as $organisation)
+							<option value="{{$organisation->id}}" @if(auth()->user()->roles > 1) selected @endif>{{$organisation->org_name}}</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="message-text" class="col-form-label">Partner:</label>
+						<select class="form-control form-control-solid partner_import" name="partner_import">
+							<option value="">---select---</option>
+
+							@if(auth()->user()->roles!=1)
+							@foreach($patners as $patner)
+							<option value="{{$patner->id}}">{{$patner->partners_name}}</option>
+							@endforeach
+							@endif
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="message-text" class="col-form-label">Upload Csv:</label>
+						<input type="file" name="upload_csv" class="form-control">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary close-modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+						<input type="submit" class="btn btn-primary" value="Save">
+					</div>
+				</form>
+			</div>
 
 		</div>
 	</div>
@@ -404,6 +430,13 @@
 	}
 
 	$(document).ready(function() {
+
+		$('.import-feed').click(function() {
+			$('#exampleModal').modal('show');
+		})
+		$('.close-modal').click(function() {
+			$('#exampleModal').modal('hide');
+		})
 		$(document).on('click', '#kt_modal_view_feeds_close', function() {
 			$('.bd-example-modal-lg').modal('hide');
 		})
@@ -469,7 +502,20 @@
 			});
 			$('.bd-example-modal-lg').modal('show');
 		})
-
+		$(document).on('change', '.org_name', function() {
+			var id = $(this).val();
+			$('.partner_import').html(' ');
+			$.ajax({
+				url: '{{url("/")."/get-partners"}}/' + id,
+				type: 'GET',
+				success: function(data) {
+					console.log(data);
+					for (var index = 0; index <= data.length; index++) {
+						$('.partner_import').append('<option value="' + data[index].id + '">' + data[index].partners_name + '</option>');
+					}
+				}
+			})
+		});
 		$(document).on('change', '.organization_name', function() {
 			var id = $(this).val();
 			$('.partner').html(' ');

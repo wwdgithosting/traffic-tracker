@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use file;
 use Exception;
 use Validator;
 use App\Models\Feed;
 use App\Models\User;
 use App\Models\FeedURL;
 use App\Models\Partner;
+use App\Imports\ImportFeed;
+use App\Models\FeedLog;
 use App\Models\FeedURLSubID;
 use App\Models\Organisation;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Symfony\Component\Console\Input\Input;
 
 class FeedController extends Controller
 {
@@ -30,15 +38,17 @@ class FeedController extends Controller
         } else if ($authUser->roles == 2) {
             $data['organisations'] = Organisation::where('id', $authUser->company)->get();
             $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
-                $join->on('partners.authUser', '=', 'organization_partners.partner_id')
+                $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.status', 1)
                     ->where('organization_partners.org_id', $authUser->company);
             })->get();
         } else {
             $data['organisations'] = Organisation::where('id', $authUser->company)->get();
             $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
                 $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.status', 1)
                     ->where('organization_partners.org_id', $authUser->company);
-            })->get();
+            })->where('partners.status', 1)->get();
         }
 
         if ($authUser->roles == 1) {
@@ -226,8 +236,123 @@ class FeedController extends Controller
         $partners = Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($id) {
             $join->on('partners.id', '=', 'organization_partners.partner_id')
                 ->where('organization_partners.org_id', $id);
-        })->get();
+        })->where('partners.status', 1)->get();
         //  DD(DB::getQueryLog());
         return $partners;
+    }
+
+    public function importFeed(Request $request)
+    {
+        //dd($request->all());
+        if ($request->hasFile('upload_csv')) :
+            $theArray = Excel::toArray([],  $request->file('upload_csv'));
+            if (count($theArray) > 0) {
+                $i = 0;
+                foreach ($theArray[0] as $key => $value) {
+                    if ($i > 0) {
+                        $feed = Feed::where('id', $value[17])->get();
+                        if (count($feed) == 0) {
+                            $feedArray = array(
+                                'id' => $value[17],
+                                'feed_title' => $value[1],
+                                'org_id' => $request->org_name,
+                                'name' => $request->partner_import,
+                                'limit' => 0,
+                                'ip_limit' => 0,
+                                'ip' => $value[3],
+                                'randomise' => 1,
+                                'fallback_feed_url' => $value[12],
+                                'status' => 1,
+                                'country_code' => $value[4],
+                                'keyword' => $value[5],
+                                'browser' => $value[6],
+                                'device' => $value[7],
+                                'os' => $value[8],
+                                'os_version' => $value[9],
+                                'browser_user_agent' => $value[10],
+                                'browser_language' => $value[11],
+                                'referrer' => $value[12],
+                                'created_user_id' => auth()->user()->id,
+                            );
+                            $feedId = Feed::create($feedArray);
+                            if ($feedId) {
+                                $feedURLarr = array('feed_url' => $value[13], 'feeds_id' => $value[17]);
+                                $feedURL = FeedURL::create($feedURLarr);
+                                if ($feedURL) {
+                                    $feedUrl_Sub_Id = array('feed_urls_id' => $feedURL->id, 'feed_id' => $value[17], 'sub_id' => $value[2], 'feed_url_index' => 0, 'limit' => 0);
+                                    FeedURLSubID::create($feedUrl_Sub_Id);
+                                }
+                            }
+                        } else {
+                            $feedURLarr = array('feed_url' => $value[13], 'feeds_id' => $value[17]);
+                            $feedURL = FeedURL::create($feedURLarr);
+                            if ($feedURL) {
+                                $feedUrl_Sub_Id = array('feed_urls_id' => $feedURL->id, 'feed_id' => $value[17], 'sub_id' => $value[2], 'feed_url_index' => count($feed), 'limit' => 0);
+                                FeedURLSubID::create($feedUrl_Sub_Id);
+                            }
+                        }
+                    }
+
+                    $i++;
+                }
+            }
+
+            //  Excel::import(new ImportFeed, $request->file('upload_csv')->store('files'));
+            return redirect()->back()->with([
+                'success' => 'File has been Imported!',
+            ]);;
+        endif;
+    }
+
+    public function importFeedLog(Request $request)
+    {
+        //dd($request->all());
+        if ($request->hasFile('upload_csv')) :
+            $data['org_id'] = $request->org_name;
+            $data['partner_id'] = $request->partner_import;
+            Excel::import(new ImportFeed($data), $request->file('upload_csv')->store('files'));
+
+            //  Excel::import(new ImportFeed, $request->file('upload_csv')->store('files'));
+            return redirect()->back()->with([
+                'success' => 'File has been Imported!',
+            ]);;
+        endif;
+    }
+
+    public function feedLogList(Request $request)
+    {
+        //return $request->all();
+        $authUser = Auth::user();
+        if ($authUser->roles == 1) {
+            $data['organisations'] = Organisation::all();
+        } else if ($authUser->roles == 2) {
+            $data['organisations'] = Organisation::where('id', $authUser->company)->get();
+            $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
+                $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.status', 1)
+                    ->where('organization_partners.org_id', $authUser->company);
+            })->get();
+        } else {
+            $data['organisations'] = Organisation::where('id', $authUser->company)->get();
+            $data['patners'] =  Partner::select('id', 'partners_name')->join('organization_partners', function ($join) use ($authUser) {
+                $join->on('partners.id', '=', 'organization_partners.partner_id')
+                    ->where('organization_partners.status', 1)
+                    ->where('organization_partners.org_id', $authUser->company);
+            })->where('partners.status', 1)->get();
+        }
+        DB::enableQueryLog();
+        $logs = FeedLog::with(['user', 'partners', 'organisation'])->orderby('id', 'desc');
+
+        if (isset($request->org_name) && !empty($request->org_name)) {
+            $logs = $logs->where('org_id', $request->org_name);
+        }
+
+        if (isset($request->partner_import) && !empty($request->partner_import)) {
+            $logs = $logs->where('partner_id', $request->partner_import);
+        }
+        $logs = $logs->paginate(10);;
+        //dd(DB::getQueryLog());
+        $data['logs'] = $logs;
+        return view('feed.feedLog', $data);
     }
 }
